@@ -39,7 +39,7 @@ function App() {
     let Ctask = tasks.find(t => t.id === id)
     setTasks(tasks.filter(task => task.id !== Ctask.id))
     try {
-      await axios.delete(`/tasks/delete/${id}/d`)
+      await axios.delete(`${proxy}/tasks/delete/${id}/d`)
     } catch (error) {
       setTimeout(() => {
         alertF(true, 'Something Went Wrong process not completed')
@@ -50,13 +50,13 @@ function App() {
 
    const CreateTask = async (task) => {
       setOnLoad(true)
-      await axios.post(`/tasks/create/`, task)
+      await axios.post(`${proxy}/tasks/create/`, task)
       setOnLoad(false)
       setTasks([...tasks, task])
     }
 
   const setTaskReminder = async (id) => {
-    await axios.put(`/tasks/update/${id}/`)
+    await axios.put(`${proxy}/tasks/update/${id}/`)
     setTasks(tasks.map((task) => {
       return task.id === id ? { ...task, reminder: !task.reminder } : task
     }))
