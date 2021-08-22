@@ -7,6 +7,7 @@ import axios from 'axios'
 import  spinner  from './spinner.gif'
 
 function App() {
+  const proxy = 'https://task-tracker-api-2021.herokuapp.com'
   const [tasks, setTasks] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [alert, setAlert] = useState(false)
@@ -28,7 +29,7 @@ function App() {
   
   useEffect(() => {
     const GetTasks = async () => {
-      const response = await axios.get(`/tasks/`)
+      const response = await axios.get(`${proxy}/tasks/`)
       setTasks(response.data)
     }
     GetTasks()
