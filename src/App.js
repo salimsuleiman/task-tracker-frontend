@@ -48,7 +48,7 @@ function App() {
     let Ctask = tasks.find(t => t.id === id)
     setTasks(tasks.filter(task => task.id !== Ctask.id))
     try {
-      await axios.delete(`${proxy}/tasks/delete/${id}/d`)
+      await axios.delete(`${proxy}/tasks/delete/${id}/`)
     } catch (error) {
       setTimeout(() => {
         alertF(true, 'Something Went Wrong process not completed')
