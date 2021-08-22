@@ -7,7 +7,7 @@ import axios from 'axios'
 import  spinner  from './spinner.gif'
 
 function App() {
-  const proxy = 'https://task-tracker-api-2021.herokuapp.com/tasks'
+  const proxy = 'https://task-tracker-api-2021.herokuapp.com'
   const [tasks, setTasks] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [alert, setAlert] = useState(false)
