@@ -7,7 +7,7 @@ import axios from 'axios'
 import  spinner  from './spinner.gif'
 
 function App() {
-  const proxy = 'https://task-tracker-api-2021.herokuapp.com'
+  const proxy = 'https://task-tracker-api-2021.herokuapp.com/tasks'
   const [tasks, setTasks] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [alert, setAlert] = useState(false)
@@ -15,7 +15,7 @@ function App() {
   const [errorText, seterrorText] = useState('')
   const [onload, setOnLoad] = useState(false)
 
-  const alertF = (error, text) => {
+  const alertF = (error, text, sec=2000) => {
     setAlert(true)
     setShowError(error)
     seterrorText(text)
@@ -23,17 +23,26 @@ function App() {
       setAlert(false)
       setShowError(false)
       seterrorText('')
-    }, 2000)
+    }, sec)
   }
 
   
   useEffect(() => {
-    const GetTasks = async () => {
-      const response = await axios.get(`${proxy}/tasks/`)
-      setTasks(response.data)
-    }
-    GetTasks()
+    const GetTasks = async () => { 
+      try {
+        const response = await axios.get(`${proxy}/tasks/`)
+        setTasks(response.data)
+      } catch (error) {
+        alertF(true, 'Something went wrong task not available now Please try again later', 5000)
+        setTasks([])
+        
+
+      }  
+     }
+  GetTasks()
   }, [])
+  
+
 
    const DeleteTask = async (id) => {
     let Ctask = tasks.find(t => t.id === id)
@@ -49,17 +58,35 @@ function App() {
   }
 
    const CreateTask = async (task) => {
+    try {
       setOnLoad(true)
       await axios.post(`${proxy}/tasks/create/`, task)
-      setOnLoad(false)
       setTasks([...tasks, task])
+    } catch (error) {
+      alertF(true, 'Something Went Wrong task not addded')
+    } finally {
+      setOnLoad(false)
+    }
+     
     }
 
   const setTaskReminder = async (id) => {
-    await axios.put(`${proxy}/tasks/update/${id}/`)
-    setTasks(tasks.map((task) => {
-      return task.id === id ? { ...task, reminder: !task.reminder } : task
-    }))
+    let Ctask = tasks.find((task) => task.id === id)
+    let n = tasks.map((task) => {
+      return task.id === Ctask.id ? { ...Ctask, reminder: !task.reminder } : task
+    })
+    setTasks(n)
+    try {
+      await axios.put(`${proxy}/tasks/update/${id}/s`)
+    } catch (error) {
+      setTimeout(() => {
+        setTasks(n.map((task) => {
+          return task.id === Ctask.id ? {...Ctask, reminder: !task.reminder } : task
+        }))
+        alertF(true, 'Something Went Wrong process not completed')
+      }, 3000)
+    }
+ 
   }
   return (
     <>
@@ -68,18 +95,18 @@ function App() {
         {alert? <AlertModal text={errorText} iserror={showerror} />: ''}
         <div className="container">
         <div className="App">
-          <Header title='Task Header' setShowForm={setShowForm} showForm={showForm} />
+          <Header title='Task Tracker' setShowForm={setShowForm} showForm={showForm} />
           {showForm ? <AddTask AddTask={CreateTask} /> : ''}
           { 
           
           tasks !== null? tasks.length > 0 ?
           <Tasks onToggle={setTaskReminder} onDelete={DeleteTask} tasks={tasks} /> : 'No task':
             <div className="spinner">
-              <img src={spinner} width="30" />
+              <img src={spinner} width="30" alt='Loading...' />
             </div>
           }
           {onload? <div className="spinner">
-              <img src={spinner} width="30" />
+              <img src={spinner} width="30" alt='Loading...'/>
             </div>: ''}
 
         </div>
